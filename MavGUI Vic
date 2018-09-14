@@ -1,11 +1,13 @@
-// Now just create a readCustomer to actually read in the data to the GUI
+//Scarlet Ganesh 
+//HW1 
 
 import java.awt.*; 
 import java.awt.event.*; 
 import javax.swing.*; 
 import java.io.*; 
+import java.util.Scanner;
+import javax.swing.JOptionPane;
 import java.util.*;
-
 
 
 public class MavGUI extends JFrame 
@@ -18,9 +20,8 @@ public class MavGUI extends JFrame
  	public MavGUI()
 	{
 		super("Mav Rental System"); 
-// ******** readCustomer method and println customerList		
-		readCustomer();
-		System.out.println(customerList);
+
+		readCustomers(); 
 
 		theDesktop = new JDesktopPane(); 
 
@@ -74,6 +75,8 @@ public class MavGUI extends JFrame
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				
+			
 				System.exit(0); 
 				//Add the program that write to customerList to customers.ser 
 			}
@@ -83,11 +86,11 @@ public class MavGUI extends JFrame
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				
+
 				JOptionPane.showMessageDialog(null, mv.printInvoice()); 
 
-
 			}
+
 		});
 
 		exitMenu.add(calcItem); 
@@ -102,29 +105,46 @@ public class MavGUI extends JFrame
 
 	}
 
-	public void readCustomer()
+	public void readCustomers()
 	{
-        Scanner input;
-        String line;
-		ArrayList<Customer> customerList = mv.getCustomerList();
-        
-        try{
-            input = new Scanner(new File("customer.txt"));
-            
-            while(input.hasNext()){
-                line=input.nextLine();
-                array=line.split(",");
-                customerList.add(new Customer(array[0],array[1],new Address(array[0],array[1],array[2], array[3])));
-  //***********    He possibly messed up on the Array
-            }
-            
-        }
-        catch(IOException ioe)
-        {
-            ioe.printStackTrace();
-     
-        }
-    } 
+		ArrayList<Customer> customerList = mv.getCustomerList(); 
+		Scanner input; 
+		String line; 
+		String array[]; 
+	
+
+		try 
+		{
+			input = new Scanner(new File("customers.txt")); 
+
+			while(input.hasNext())
+			{
+				line = input.nextLine(); 
+				array = line.split(","); 
+				
+				
+				customerList.add(new Customer(array[0],(new Address(array[1], array[2], array[3], array[4])), array[5])); 
+
+				//ElectronicRental.ElectronicType.ValueOf(value
+				//need to append rental info to the rentalList and customer information
+
+			}
+
+
+	
+		}
+		catch(IOException ioe)
+		{
+			ioe.printStackTrace(); 
+		}
+
+
+
+	
+
+	}
+
+	 
 
 class CustomerPanel extends JPanel 
 {
@@ -189,7 +209,19 @@ class CustomerPanel extends JPanel
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			System.out.println(nameField.getText()); 
+			String msg = ""; 
+
+			if(mv.customerExists(nameField.getText()))
+			{
+				msg = "Customer Exists" ; 
+
+				JOptionPane.showMessageDialog(null, msg); 
+
+			}
+			else 
+				System.out.println(nameField.getText()); 
+			
+
 			//COMEBACK AND FIX TO GET CUSTOMER AND CHECK 
 
 			nameField.setText(""); 
@@ -327,3 +359,5 @@ class RentalPanel extends JPanel
 
 
 }
+
+
