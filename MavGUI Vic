@@ -1,0 +1,329 @@
+// Now just create a readCustomer to actually read in the data to the GUI
+
+import java.awt.*; 
+import java.awt.event.*; 
+import javax.swing.*; 
+import java.io.*; 
+import java.util.*;
+
+
+
+public class MavGUI extends JFrame 
+{
+	
+	private JDesktopPane theDesktop; 
+	
+	MavRental mv = new MavRental(); 
+
+ 	public MavGUI()
+	{
+		super("Mav Rental System"); 
+// ******** readCustomer method and println customerList		
+		readCustomer();
+		System.out.println(customerList);
+
+		theDesktop = new JDesktopPane(); 
+
+		JMenuBar bar = new JMenuBar();
+ 
+		JMenu addMenu = new JMenu("Add"); 
+		JMenuItem addCustomer = new JMenuItem(" Add Customer"); 
+		JMenuItem addRental = new JMenuItem(" Add Rental"); 
+
+		addCustomer.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				JInternalFrame frame = new JInternalFrame("Add Customer",
+						true, true, true, true);
+				
+				CustomerPanel cp = new CustomerPanel(); 
+				frame.add(cp);
+				frame.pack(); 
+				theDesktop.add(frame);
+				frame.setVisible(true); 
+			} 
+
+		}); 
+
+		addRental.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				JInternalFrame frame = new JInternalFrame("Add Rental", 
+						true, true, true, true); 
+
+				RentalPanel rp = new RentalPanel(); 
+				frame.add(rp); 
+				frame.pack(); 
+				theDesktop.add(frame); 
+				frame.setVisible(true); 
+
+			}	
+
+		}); 
+
+		addMenu.add(addCustomer); 
+		addMenu.add(addRental); 
+
+		JMenu exitMenu = new JMenu("Exit");
+		JMenuItem calcItem = new JMenuItem("Calculate Charges"); 
+		JMenuItem exitItem = new JMenuItem("Close"); 
+
+		exitItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				System.exit(0); 
+				//Add the program that write to customerList to customers.ser 
+			}
+		});
+
+		calcItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				
+				JOptionPane.showMessageDialog(null, mv.printInvoice()); 
+
+
+			}
+		});
+
+		exitMenu.add(calcItem); 
+		exitMenu.add(exitItem); 
+
+		bar.add(addMenu);
+		bar.add(exitMenu);  
+		
+		add(theDesktop); 
+		setJMenuBar(bar); 
+	
+
+	}
+
+	public void readCustomer()
+	{
+        Scanner input;
+        String line;
+		ArrayList<Customer> customerList = mv.getCustomerList();
+        
+        try{
+            input = new Scanner(new File("customer.txt"));
+            
+            while(input.hasNext()){
+                line=input.nextLine();
+                array=line.split(",");
+                customerList.add(new Customer(array[0],array[1],new Address(array[0],array[1],array[2], array[3])));
+  //***********    He possibly messed up on the Array
+            }
+            
+        }
+        catch(IOException ioe)
+        {
+            ioe.printStackTrace();
+     
+        }
+    } 
+
+class CustomerPanel extends JPanel 
+{
+	private JLabel nameLabel; 
+	private JLabel streetLabel; 
+	private JLabel cityLabel; 
+	private JLabel stateLabel; 
+	private JLabel zipLabel; 
+	private JLabel creditCardNumberLabel; 
+	private JLabel buttonLabel; 
+
+	private JTextField nameField; 
+	private JTextField streetField; 
+	private JTextField cityField; 
+	private JTextField stateField; 
+	private JTextField zipField; 
+	private JTextField creditCardNumberField; 
+	private JButton button; 
+
+	public CustomerPanel()
+	{
+		setLayout(new GridLayout(7,2)); 
+		
+		nameLabel = new JLabel(" Enter name"); 
+		streetLabel = new JLabel(" Enter street"); 
+		cityLabel = new JLabel(" Enter city"); 
+		stateLabel = new JLabel(" Enter state"); 
+		zipLabel = new JLabel(" Enter zip"); 
+		creditCardNumberLabel = new JLabel(" Enter credit card number"); 
+		buttonLabel = new JLabel(" Click When Done"); 
+
+		nameField = new JTextField(25); 
+		streetField = new JTextField(25); 
+		cityField = new JTextField(25); 
+		stateField = new JTextField(25); 
+		zipField = new JTextField(25); 
+		creditCardNumberField = new JTextField(25); 
+		button = new JButton("SUBMIT"); 
+
+		MyListener handler = new MyListener(); 
+		button.addActionListener(handler); 		
+
+		add(nameLabel); 
+		add(nameField); 
+		add(streetLabel); 
+		add(streetField); 
+		add(cityLabel); 
+		add(cityField); 
+		add(stateLabel); 
+		add(stateField); 
+		add(zipLabel); 
+		add(zipField);
+		add(creditCardNumberLabel); 
+		add(creditCardNumberField); 
+		add(buttonLabel); 
+		add(button);  
+		
+
+	}
+
+	class MyListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			System.out.println(nameField.getText()); 
+			//COMEBACK AND FIX TO GET CUSTOMER AND CHECK 
+
+			nameField.setText(""); 
+			streetField.setText(""); 
+			cityField.setText(""); 
+			stateField.setText(""); 
+			zipField.setText(""); 
+			creditCardNumberField.setText(""); 
+			nameField.requestFocus(); 
+		
+		}
+
+
+	}
+	
+
+
+}
+
+
+class RentalPanel extends JPanel
+{
+	private JLabel customerNameLabel; 
+	private JLabel enterNumberOfDaysLabel; 
+	private JLabel enterPricePerDayLabel; 
+	private JLabel buttonLabel; 
+
+	private JTextField customerNameField; 
+	private JTextField enterNumberOfDaysField; 
+	private JTextField enterPricePerDayField; 
+	
+	private JButton submitButton; 
+	private JCheckBox furBox; 
+	private JCheckBox elecBox; 
+	private ButtonGroup group; 
+
+	private JComboBox<String> typeBox; 
+	String types[] = {"BED", "COUCH", "CHAIR"}; 
+
+	private JComboBox<String> type2Box; 
+	String types2[] = {"COMPUTER", "TV"}; 
+
+	public RentalPanel()
+	{
+		setLayout(new GridLayout(6,2)); 
+		ButtonGroup group = new ButtonGroup(); 
+
+		furBox = new JCheckBox(" Furniture"); 
+		elecBox = new JCheckBox(" Electronic"); 
+		group.add(furBox); 
+		group.add(elecBox); 
+
+		furBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				typeBox.setEnabled(true);
+				type2Box.setEnabled(false);  
+			}
+
+		}); 
+
+		elecBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				typeBox.setEnabled(false);
+				type2Box.setEnabled(true);  
+
+			}
+
+		}); 
+
+		customerNameLabel = new JLabel(" Enter customer name"); 
+		enterNumberOfDaysLabel = new JLabel(" Enter number of days"); 
+		enterPricePerDayLabel = new JLabel(" Enter price per day"); 
+		buttonLabel = new JLabel(" Click When Done"); 
+
+		customerNameField = new JTextField(25); 
+		enterNumberOfDaysField = new JTextField(25); 
+		enterPricePerDayField = new JTextField(25); 
+		
+		submitButton = new JButton("SUBMIT"); 
+
+		typeBox = new JComboBox<String>(types);
+		type2Box = new JComboBox<String>(types2);  
+		 
+		MyListener handler = new MyListener(); 
+		submitButton.addActionListener(handler); 		
+
+		add(customerNameLabel); 
+		add(customerNameField);
+		add(furBox); 
+		add(elecBox);  
+		add(enterNumberOfDaysLabel); 
+		add(enterNumberOfDaysField); 
+		add(enterPricePerDayLabel); 
+		add(enterPricePerDayField);
+		add(typeBox);
+		add(type2Box);    
+		add(buttonLabel); 
+		add(submitButton); 
+	}
+
+	class MyListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) 
+		{
+			System.out.print(customerNameField.getText()); 
+			//COME BACK AND FIX RENTAL TO GET IT AND CHECK 
+
+			if (furBox.isSelected())
+			{
+				System.out.println(furBox.getText()); 
+			}
+			else 
+			{
+				System.out.println(types[typeBox.getSelectedIndex()]); 
+				System.out.println(elecBox.getText()); 
+			}
+
+			customerNameField.setText(""); 
+			enterNumberOfDaysField.setText(""); 
+			enterPricePerDayField.setText(""); 
+			customerNameField.requestFocus(); 
+		}
+
+
+	}
+
+
+
+
+}
+
+
+}
